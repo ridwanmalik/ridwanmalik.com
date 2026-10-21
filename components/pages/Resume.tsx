@@ -1,8 +1,8 @@
 "use client"
 
 import type { CSSProperties, MouseEvent, ReactNode } from "react"
-import { useEffect, useRef, useState } from "react"
-import { motion, useInView, useReducedMotion, useSpring } from "motion/react"
+import { Fragment, useEffect, useRef, useState } from "react"
+import { motion, useInView, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "motion/react"
 import { Download } from "lucide-react"
 import { Reveal } from "@/components/shared"
 import { PERSONAL_INFO, RESUME_SKILLS, SECTION_TITLES } from "@/lib/constants"
@@ -52,8 +52,27 @@ const TYPING = {
   caretBlink: 1,
 }
 
+// After the page has printed, a marker swipes across one phrase at a time, in this order.
+// "years" stands for the "8+ years" in the summary; the rest are skill items as written
+// in RESUME_SKILLS. Keep them to lines that sit in the visible top of the sheet.
+const YEARS_PATTERN = /\d+\+ years/
+const HIGHLIGHTS = ["years", "React (ReactJS)", "TypeScript", "Next.js (NextJS)", "React Native", "Node.js"]
+const HIGHLIGHT = {
+  start: PRINT.scanDelay + PRINT.scanDuration + 0.4,
+  every: 2.4,
+  sweep: 0.6,
+  fade: 0.5,
+}
+
 const MAX_TILT_DEG = 6
 const TILT_SPRING = { stiffness: 150, damping: 18 }
+
+// Soft light that follows the mouse across the glass (desktop only, mouse pointers)
+const SPOTLIGHT = {
+  color: "rgba(204, 214, 246, 0.09)",
+  radius: "40%",
+  spring: { stiffness: 200, damping: 30 },
+}
 
 // The sheet's font size is a share of its own width (cqw), and everything inside is in
 // em, so the page keeps the PDF's proportions at any screen size. Colours are the site's
@@ -66,6 +85,27 @@ const PAPER_VARS = {
   "--heading": "#7CFAD6",
   "--line": "rgba(255, 255, 255, 0.1)",
 } as CSSProperties
+
+// Off matches the sheet's body text (--body); on is near-white with a faint mint glow
+const MARKER_STYLE = {
+  off: { color: "#a8b2d1", textShadow: "0 0 0px rgba(124, 250, 214, 0)" },
+  on: { color: "#ffffff", textShadow: "0 0 10px rgba(124, 250, 214, 0.55)" },
+}
+
+// No background: the phrase itself lights up (brighter text, soft glow) and dims back
+const Marker = ({ active, children }: { active: boolean; children: ReactNode }) => (
+  <motion.span
+    initial={false}
+    animate={active ? MARKER_STYLE.on : MARKER_STYLE.off}
+    transition={{ duration: active ? HIGHLIGHT.sweep : HIGHLIGHT.fade, ease: "easeOut" }}>
+    {children}
+  </motion.span>
+)
+
+const yearsMatch = PERSONAL_INFO.resumeSummary.match(YEARS_PATTERN)?.[0]
+const [summaryBefore, summaryAfter] = yearsMatch
+  ? PERSONAL_INFO.resumeSummary.split(yearsMatch)
+  : [PERSONAL_INFO.resumeSummary, ""]
 
 const contact = getResumeContact()
 const roles = getResumeRoles()
@@ -140,7 +180,11 @@ const TypedName = ({ play, instant }: TypingProps) => {
   )
 }
 
-const ResumeSheet = ({ play = true, instant = true }: Partial<TypingProps>) => (
+interface ResumeSheetProps extends Partial<TypingProps> {
+  highlight?: string | null
+}
+
+const ResumeSheet = ({ play = true, instant = true, highlight = null }: ResumeSheetProps) => (
   <div
     style={PAPER_VARS}
     className="p-[3.6em] text-[1.48cqw] leading-[1.25] text-[color:var(--body)] [font-family:Helvetica,Arial,sans-serif]">
@@ -166,14 +210,25 @@ const ResumeSheet = ({ play = true, instant = true }: Partial<TypingProps>) => (
     </p>
 
     <SheetSection title={RESUME_CONTENT.headings.summary}>
-      <p>{PERSONAL_INFO.resumeSummary}</p>
+      <p>
+        {summaryBefore}
+        {yearsMatch ? <Marker active={highlight === "years"}>{yearsMatch}</Marker> : null}
+        {summaryAfter}
+      </p>
     </SheetSection>
 
     <SheetSection title={RESUME_CONTENT.headings.skills}>
       {RESUME_SKILLS.map(group => (
         <div key={group.label} className="mb-[0.25em]">
-          <p className="font-bold text-[color:var(--ink)]">{group.label}</p>
-          <p>{group.items.join(", ")}</p>
+          <p className="font-semibold text-custom-foreground">{group.label}</p>
+          <p>
+            {group.items.map((item, i) => (
+              <Fragment key={item}>
+                {i > 0 ? ", " : null}
+                {HIGHLIGHTS.includes(item) ? <Marker active={highlight === item}>{item}</Marker> : item}
+              </Fragment>
+            ))}
+          </p>
         </div>
       ))}
     </SheetSection>
@@ -265,8 +320,28 @@ const Resume = () => {
   // Reduced motion: skip the print sequence and show the finished page
   const timing = (delay: number, duration: number) => (reduceMotion ? { duration: 0 } : { delay, duration })
 
+  // -1 until the page has printed, then cycles through HIGHLIGHTS
+  const [highlightIndex, setHighlightIndex] = useState(-1)
+  useEffect(() => {
+    if (!play || reduceMotion) return
+    let interval: ReturnType<typeof setInterval> | undefined
+    const start = setTimeout(() => {
+      setHighlightIndex(0)
+      interval = setInterval(() => setHighlightIndex(i => (i + 1) % HIGHLIGHTS.length), HIGHLIGHT.every * 1000)
+    }, HIGHLIGHT.start * 1000)
+    return () => {
+      clearTimeout(start)
+      clearInterval(interval)
+    }
+  }, [play, reduceMotion])
+
   const rotateX = useSpring(0, TILT_SPRING)
   const rotateY = useSpring(0, TILT_SPRING)
+
+  const spotX = useMotionValue(50)
+  const spotY = useMotionValue(50)
+  const spotOpacity = useSpring(0, SPOTLIGHT.spring)
+  const spotlight = useMotionTemplate`radial-gradient(circle at ${spotX}% ${spotY}%, ${SPOTLIGHT.color}, transparent ${SPOTLIGHT.radius})`
 
   const handleMouseMove = (event: MouseEvent<HTMLDivElement>) => {
     if (reduceMotion) return
@@ -275,11 +350,15 @@ const Resume = () => {
     const y = (event.clientY - rect.top) / rect.height - 0.5
     rotateY.set(x * MAX_TILT_DEG * 2)
     rotateX.set(-y * MAX_TILT_DEG * 2)
+    spotX.set((x + 0.5) * 100)
+    spotY.set((y + 0.5) * 100)
+    spotOpacity.set(1)
   }
 
   const resetTilt = () => {
     rotateX.set(0)
     rotateY.set(0)
+    spotOpacity.set(0)
   }
 
   const printEnd = PRINT.scanDelay + PRINT.scanDuration
@@ -292,7 +371,7 @@ const Resume = () => {
           <div className="flex-1 h-px bg-custom-secondary/40 ml-4 sm:ml-8"></div>
         </div>
 
-        <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,500px)] lg:gap-16">
+        <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,620px)] lg:gap-12">
           <Reveal className="space-y-6">
             <h3 className="text-2xl sm:text-3xl font-bold text-custom-foreground">{RESUME_CONTENT.title}</h3>
             <p className="text-custom-secondary text-sm md:text-base leading-relaxed">{RESUME_CONTENT.description}</p>
@@ -310,7 +389,7 @@ const Resume = () => {
             ref={stageRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={resetTilt}
-            className="relative mx-auto w-[92%] max-w-[500px] lg:w-full [container-type:inline-size] [perspective:1600px]">
+            className="relative mx-auto w-full max-w-[620px] [container-type:inline-size] [perspective:1600px]">
             {/* Soft glow that blooms once the page has printed */}
             <motion.div
               aria-hidden
@@ -341,11 +420,16 @@ const Resume = () => {
                 animate={play ? { opacity: 1 } : undefined}
                 transition={timing(PRINT.paper, 0.6)}>
                 <motion.div
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0"
+                  style={{ background: spotlight, opacity: spotOpacity }}
+                />
+                <motion.div
                   className="absolute inset-0"
                   initial={{ clipPath: "inset(0 0 100% 0)" }}
                   animate={play ? { clipPath: "inset(0 0 0% 0)" } : undefined}
                   transition={{ ...timing(PRINT.scanDelay, PRINT.scanDuration), ease: "linear" }}>
-                  <ResumeSheet play={play} instant={!!reduceMotion} />
+                  <ResumeSheet play={play} instant={!!reduceMotion} highlight={HIGHLIGHTS[highlightIndex] ?? null} />
                 </motion.div>
               </motion.div>
 
