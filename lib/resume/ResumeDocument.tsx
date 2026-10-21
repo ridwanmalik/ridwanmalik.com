@@ -29,7 +29,9 @@ const styles = StyleSheet.create({
     color: COLORS.body,
     lineHeight: 1.25,
   },
-  name: { fontSize: 20, fontFamily: "Helvetica-Bold", color: COLORS.ink, letterSpacing: 0.5 },
+  // Own lineHeight: react-pdf v4 inherits the page's line height as a fixed size,
+  // which is too short for 20pt and made the name overlap the contact row.
+  name: { fontSize: 20, lineHeight: 1.2, fontFamily: "Helvetica-Bold", color: COLORS.ink, letterSpacing: 0.5 },
   contactRow: { flexDirection: "row", flexWrap: "wrap", marginTop: 4, fontSize: 8.5, color: COLORS.muted },
   contactItem: { marginRight: 6 },
   contactLink: { color: COLORS.heading, textDecoration: "none" },

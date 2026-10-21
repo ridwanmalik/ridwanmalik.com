@@ -72,7 +72,9 @@ const RootLayout = ({ children }: { children: ReactNode }) => {
   return (
     // data-scroll-behavior keeps Next.js 16 jumping straight to the top on route
     // changes, despite the global `scroll-behavior: smooth` in globals.css.
-    <html lang="en" className="dark" data-scroll-behavior="smooth">
+    // suppressHydrationWarning: browsers/extensions inject attributes on <html>
+    // (e.g. mobile Chrome's __gcrremoteframetoken) before React hydrates.
+    <html lang="en" className="dark" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body
         className="h-screen w-screen bg-slate-900 text-slate-400 bg-glowing-blue font-sans tracking-wide"
         style={{

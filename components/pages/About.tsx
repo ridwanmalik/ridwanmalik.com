@@ -1,6 +1,8 @@
 import { SECTION_TITLES } from "@/lib/constants"
 import TechWithHoverCard from "@/components/shared/TechWithHoverCard"
 import { Reveal } from "@/components/shared"
+import { ridwanHeadshot } from "@/lib/assets"
+import Image from "next/image"
 
 // Local constants - only used in this component (outside component to avoid recreation)
 const ABOUT_CONTENT = {
@@ -10,6 +12,10 @@ const ABOUT_CONTENT = {
     "I'm studying Computer Science and Engineering at Bangladesh University of Business and Technology, while continuing to work as a Software Developer. I'm passionate about learning new technologies and solving complex problems.",
     "I specialize in building applications with React, Next.js, React Native, and Laravel, creating everything from frontend interfaces and cross-platform mobile apps to robust backend systems. My experience spans from JavaScript and PHP development to Node.js server applications and MySQL database design.",
   ],
+  headshot: {
+    alt: "Ridwan Malik headshot",
+    size: 300,
+  },
 }
 
 const About = () => {
@@ -27,6 +33,23 @@ const About = () => {
               <TechWithHoverCard text={paragraph} />
             </div>
           ))}
+        </Reveal>
+
+        {/* Mobile only: desktop already shows the full-length photo in the hero */}
+        <Reveal className="lg:hidden mx-auto mt-14 w-[70%] max-w-[300px]">
+          <div className="group relative isolate">
+            <div className="relative isolate overflow-hidden rounded bg-custom-accent transition-transform duration-300 group-hover:-translate-x-1 group-hover:-translate-y-1">
+              <Image
+                src={ridwanHeadshot}
+                alt={ABOUT_CONTENT.headshot.alt}
+                width={ABOUT_CONTENT.headshot.size}
+                height={ABOUT_CONTENT.headshot.size}
+                className="aspect-square w-full object-cover grayscale mix-blend-multiply transition duration-300 group-hover:grayscale-0 group-hover:mix-blend-normal"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-oxford-blue mix-blend-screen transition-opacity duration-300 group-hover:opacity-0" />
+            </div>
+            <div className="absolute inset-0 -z-10 translate-x-3.5 translate-y-3.5 rounded border-2 border-custom-accent transition-transform duration-300 group-hover:translate-x-2 group-hover:translate-y-2" />
+          </div>
         </Reveal>
       </div>
     </section>

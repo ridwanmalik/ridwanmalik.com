@@ -83,7 +83,7 @@
   }
 
   .section-wrapper {
-    @apply w-full h-full overflow-y-scroll;
+    @apply w-full h-full overflow-y-scroll overflow-x-hidden;
     scroll-behavior: smooth;
   }
 
