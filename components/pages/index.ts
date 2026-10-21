@@ -4,6 +4,7 @@ import Contact from "./Contact"
 import Experience from "./Experience"
 import Home from "./Home"
 import Projects from "./Projects"
+import Resume from "./Resume"
 import Technologies from "./Technologies"
 
-export { About, Certification, Contact, Experience, Home, Projects, Technologies }
+export { About, Certification, Contact, Experience, Home, Projects, Resume, Technologies }

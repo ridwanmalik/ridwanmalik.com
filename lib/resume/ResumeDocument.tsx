@@ -1,24 +1,18 @@
+import { PERSONAL_INFO, RESUME_SKILLS, buildResumeSummary } from "@/lib/constants"
 import {
-  CERTIFICATIONS,
-  EDUCATION,
-  EXPERIENCES,
-  PERSONAL_INFO,
-  PROJECTS,
-  RESUME_SKILLS,
-  SOCIAL_LINKS,
-  buildResumeSummary,
-} from "@/lib/constants"
+  RESUME_COLORS,
+  RESUME_LANGUAGES,
+  getResumeCertifications,
+  getResumeContact,
+  getResumeEducation,
+  getResumeProjects,
+  getResumeRoles,
+  stripProtocol,
+} from "@/lib/resume/data"
 import { Document, Link, Page, StyleSheet, Text, View } from "@react-pdf/renderer"
+import { Fragment } from "react"
 
-// Print-friendly palette (the site's mint accent is too light on white paper)
-const COLORS = {
-  ink: "#0A192F",
-  body: "#334155",
-  muted: "#64748B",
-  accent: "#0F766E",
-  heading: "#2079c7",
-  line: "#E2E8F0",
-}
+const COLORS = RESUME_COLORS
 
 const styles = StyleSheet.create({
   page: {
@@ -91,25 +85,6 @@ const styles = StyleSheet.create({
   eduInstitution: { fontFamily: "Helvetica", color: COLORS.body },
 })
 
-// Recent roles carry the detail; older roles are condensed.
-const MAX_ROLES = 7
-const ROLES_WITH_FULL_BULLETS = 4
-const FULL_BULLETS = 3
-const CONDENSED_BULLETS = 1
-
-const MAX_PROJECTS = 4
-
-const firstSentence = (text: string) => {
-  const idx = text.indexOf(". ")
-  return idx === -1 ? text : text.slice(0, idx + 1)
-}
-
-// Resume-only sections
-const LANGUAGES = ["English (Fluent)", "Bangla (Native)", "Spanish (Basic)", "Hindi (Fluent)"]
-
-const getSocial = (name: string) => SOCIAL_LINKS.find(link => link.name === name)?.url ?? ""
-const stripProtocol = (url: string) => url.replace(/^https?:\/\//, "").replace(/\/$/, "")
-
 type ResumeDocumentProps = {
   // Mirrors the target posting's exact job title in the summary's opening line.
   // Omitted for the site's own download, which keeps the default title.
@@ -117,8 +92,7 @@ type ResumeDocumentProps = {
 }
 
 const ResumeDocument = ({ title }: ResumeDocumentProps) => {
-  const github = getSocial("GitHub")
-  const linkedin = getSocial("LinkedIn")
+  const contact = getResumeContact()
 
   return (
     <Document
@@ -130,40 +104,25 @@ const ResumeDocument = ({ title }: ResumeDocumentProps) => {
         <View style={styles.header}>
           <Text style={styles.name}>{PERSONAL_INFO.name}</Text>
           <View style={styles.contactRow}>
-            <Link src={`mailto:${PERSONAL_INFO.email}`} style={[styles.contactItem, styles.contactPlain]}>
-              {PERSONAL_INFO.email}
+            <Link src={`mailto:${contact.email}`} style={[styles.contactItem, styles.contactPlain]}>
+              {contact.email}
             </Link>
             <Text style={styles.contactItem}>|</Text>
-            <Link
-              src={`tel:${PERSONAL_INFO.phone.replace(/[\s-]/g, "")}`}
-              style={[styles.contactItem, styles.contactPlain]}>
-              {PERSONAL_INFO.phone}
+            <Link src={contact.phoneHref} style={[styles.contactItem, styles.contactPlain]}>
+              {contact.phone}
             </Link>
             <Text style={styles.contactItem}>|</Text>
-            <Text style={styles.contactItem}>{PERSONAL_INFO.location}</Text>
+            <Text style={styles.contactItem}>{contact.location}</Text>
           </View>
           <View style={styles.contactRow}>
-            {PERSONAL_INFO.website ? (
-              <Link src={PERSONAL_INFO.website} style={[styles.contactItem, styles.contactLink]}>
-                {stripProtocol(PERSONAL_INFO.website)}
-              </Link>
-            ) : null}
-            {linkedin ? (
-              <>
-                <Text style={styles.contactItem}>|</Text>
-                <Link src={linkedin} style={[styles.contactItem, styles.contactLink]}>
-                  {stripProtocol(linkedin)}
+            {contact.links.map((link, i) => (
+              <Fragment key={link.href}>
+                {i > 0 ? <Text style={styles.contactItem}>|</Text> : null}
+                <Link src={link.href} style={[styles.contactItem, styles.contactLink]}>
+                  {link.label}
                 </Link>
-              </>
-            ) : null}
-            {github ? (
-              <>
-                <Text style={styles.contactItem}>|</Text>
-                <Link src={github} style={[styles.contactItem, styles.contactLink]}>
-                  {stripProtocol(github)}
-                </Link>
-              </>
-            ) : null}
+              </Fragment>
+            ))}
           </View>
         </View>
 
@@ -189,64 +148,49 @@ const ResumeDocument = ({ title }: ResumeDocumentProps) => {
           {/* ATS heading dictionaries match "Professional Experience" / "Work History"
               more reliably than a bare "Experience". */}
           <Text style={styles.sectionTitle}>Professional Experience</Text>
-          {EXPERIENCES.filter(job => !(job as { hideFromResume?: boolean }).hideFromResume)
-            .slice(0, MAX_ROLES)
-            .map((job, index) => {
-              // A role may also override how many bullets it gets (e.g. to fit an extra line)
-              const bulletLimit =
-                (job as { resumeBulletLimit?: number }).resumeBulletLimit ??
-                (index < ROLES_WITH_FULL_BULLETS ? FULL_BULLETS : CONDENSED_BULLETS)
-              // A role may override which bullets the resume shows (e.g. lead with React work)
-              const bullets = (job as { resumeBullets?: string[] }).resumeBullets ?? job.description
-              return (
-                <View key={`${job.company}-${job.period}`} style={styles.job} wrap={false}>
-                  <View style={styles.jobHeader}>
-                    <Text style={styles.jobRole}>
-                      {job.role} @{" "}
-                      {job.url ? (
-                        <Link src={job.url} style={styles.jobCompany}>
-                          {job.company}
-                        </Link>
-                      ) : (
-                        <Text style={styles.jobCompany}>{job.company}</Text>
-                      )}
-                    </Text>
-                    <Text style={styles.jobPeriod}>
-                      {(job as { resumePeriod?: string }).resumePeriod ?? job.period}
-                    </Text>
-                  </View>
-                  {bullets.slice(0, bulletLimit).map((line, i) => (
-                    <View key={i} style={styles.bulletRow}>
-                      <Text style={styles.bulletDot}>•</Text>
-                      <Text style={styles.bulletText}>{line}</Text>
-                    </View>
-                  ))}
+          {getResumeRoles().map(job => (
+            <View key={job.key} style={styles.job} wrap={false}>
+              <View style={styles.jobHeader}>
+                <Text style={styles.jobRole}>
+                  {job.role} @{" "}
+                  {job.url ? (
+                    <Link src={job.url} style={styles.jobCompany}>
+                      {job.company}
+                    </Link>
+                  ) : (
+                    <Text style={styles.jobCompany}>{job.company}</Text>
+                  )}
+                </Text>
+                <Text style={styles.jobPeriod}>{job.period}</Text>
+              </View>
+              {job.bullets.map((line, i) => (
+                <View key={i} style={styles.bulletRow}>
+                  <Text style={styles.bulletDot}>•</Text>
+                  <Text style={styles.bulletText}>{line}</Text>
                 </View>
-              )
-            })}
+              ))}
+            </View>
+          ))}
         </View>
 
         {/* Selected Projects */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Selected Projects</Text>
-          {PROJECTS.featured
-            .filter(project => !(project as { hideFromResume?: boolean }).hideFromResume)
-            .slice(0, MAX_PROJECTS)
-            .map(project => (
-              <View key={project.title} style={styles.project} wrap={false}>
-                <Text style={styles.projectHeading}>
-                  <Text style={styles.projectTitle}>{project.title}</Text>
-                  <Text style={styles.projectTech}> — {project.tech.join(", ")}</Text>
-                  {project.external ? (
-                    <Link src={project.external} style={styles.contactLink}>
-                      {"  "}
-                      {stripProtocol(project.external)}
-                    </Link>
-                  ) : null}
-                </Text>
-                <Text style={styles.projectDesc}>{firstSentence(project.description)}</Text>
-              </View>
-            ))}
+          {getResumeProjects().map(project => (
+            <View key={project.title} style={styles.project} wrap={false}>
+              <Text style={styles.projectHeading}>
+                <Text style={styles.projectTitle}>{project.title}</Text>
+                <Text style={styles.projectTech}> — {project.tech}</Text>
+                {project.external ? (
+                  <Link src={project.external} style={styles.contactLink}>
+                    {"  "}
+                    {stripProtocol(project.external)}
+                  </Link>
+                ) : null}
+              </Text>
+              <Text style={styles.projectDesc}>{project.summary}</Text>
+            </View>
+          ))}
         </View>
 
         {/* Education — dates are inlined into the same text run rather than pushed to a
@@ -255,11 +199,11 @@ const ResumeDocument = ({ title }: ResumeDocumentProps) => {
             heading), leaving each degree looking undated. */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Education</Text>
-          {EDUCATION.map(edu => (
+          {getResumeEducation().map(edu => (
             <Text key={edu.degree} style={styles.eduLine}>
               <Text style={styles.eduDegree}>{edu.degree}</Text>
-              <Text style={styles.eduInstitution}> — {edu.shortName}</Text>
-              {` (${edu.resumePeriod ?? edu.period})${edu.note ? `, ${edu.note}` : ""}`}
+              <Text style={styles.eduInstitution}> — {edu.institution}</Text>
+              {edu.details}
             </Text>
           ))}
         </View>
@@ -268,7 +212,7 @@ const ResumeDocument = ({ title }: ResumeDocumentProps) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Certifications</Text>
           <Text style={styles.certText}>
-            {CERTIFICATIONS.filter(cert => (cert as { resumeFeatured?: boolean }).resumeFeatured).map((cert, i) => (
+            {getResumeCertifications().map((cert, i) => (
               <Text key={cert.title}>
                 {i > 0 ? "   •   " : ""}
                 <Link src={cert.url} style={styles.certName}>
@@ -283,7 +227,7 @@ const ResumeDocument = ({ title }: ResumeDocumentProps) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Languages</Text>
           <Text style={styles.certText}>
-            {LANGUAGES.map((lang, i) => (
+            {RESUME_LANGUAGES.map((lang, i) => (
               <Text key={lang}>
                 {i > 0 ? "   •   " : ""}
                 {lang}

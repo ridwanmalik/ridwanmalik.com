@@ -5,6 +5,7 @@ import Education from "@/components/pages/Education"
 import Experience from "@/components/pages/Experience"
 import HomeSection from "@/components/pages/Home"
 import Projects from "@/components/pages/Projects"
+import Resume from "@/components/pages/Resume"
 import Technologies from "@/components/pages/Technologies"
 
 const Home = () => {
@@ -12,6 +13,7 @@ const Home = () => {
     <>
       <HomeSection />
       <About />
+      <Resume />
       <Technologies />
       <Experience />
       <Education />

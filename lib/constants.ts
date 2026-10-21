@@ -980,6 +980,7 @@ export const EDUCATION = [
 
 export const SECTION_TITLES = {
   about: "About Me",
+  resume: "My Resume",
   technologies: "Technical Skills",
   experience: "Where I've Worked",
   education: "Education",
