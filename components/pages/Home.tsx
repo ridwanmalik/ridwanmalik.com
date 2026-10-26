@@ -1,3 +1,4 @@
+import CountUp from "@/components/shared/CountUp"
 import Header from "@/components/shared/Header"
 import HeroBackdrop from "@/components/shared/HeroBackdrop"
 import HeroCards from "@/components/shared/HeroCards"
@@ -83,10 +84,12 @@ const Home = () => {
                     bottom, so justify-end pins the numbers to the top: they stay level even when
                     a label wraps on a narrow phone */}
                 <dl className="mt-8 grid grid-cols-3 max-w-md border-y border-custom-secondary/20 py-4 divide-x divide-custom-secondary/20">
-                  {HOME_CONTENT.stats.map(stat => (
+                  {HOME_CONTENT.stats.map((stat, index) => (
                     <div key={stat.label} className="flex flex-col-reverse justify-end gap-1 px-3 sm:px-4 first:pl-0">
                       <dt className="text-xs text-custom-secondary">{stat.label}</dt>
-                      <dd className="text-2xl sm:text-3xl font-bold text-custom-foreground">{stat.value}</dd>
+                      <dd className="text-2xl sm:text-3xl font-bold text-custom-foreground">
+                        <CountUp value={stat.value} delay={0.15 + index * 0.08} />
+                      </dd>
                     </div>
                   ))}
                 </dl>
