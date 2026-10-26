@@ -36,6 +36,7 @@ import Image from "next/image"
 import { SECTION_TITLES } from "@/lib/constants"
 import TechHoverCard from "@/components/shared/TechHoverCard"
 import { StaggerGroup, StaggerItem } from "@/components/shared"
+import CollapsibleChips from "@/components/shared/CollapsibleChips"
 
 // Local constants - only used in this component (outside component to avoid recreation)
 // Names must match TECHNOLOGIES keys in lib/constants so each chip keeps its hover card.
@@ -53,7 +54,7 @@ interface Skill {
 }
 
 const CHIP_STYLES = {
-  base: "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm text-custom-foreground transition-colors",
+  base: "inline-flex items-center gap-2 whitespace-nowrap rounded-md border px-3 py-1.5 text-sm text-custom-foreground transition-colors",
   regular: "border-white/10 bg-white/[0.03] hover:border-custom-accent/50 hover:bg-white/[0.06]",
   core: "border-custom-accent/60 bg-custom-accent/[0.06] hover:border-custom-accent hover:bg-custom-accent/10",
 }
@@ -160,17 +161,18 @@ const Technologies = () => (
           Once in view, each label and chip appears one after another, top to bottom. */}
       <StaggerGroup inView stagger={CHIP_STAGGER} className="divide-y divide-white/5">
         {SKILL_GROUPS.map(group => (
-          <div key={group.label} className="grid gap-3 py-6 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-8">
+          <div key={group.label} className="grid gap-3 py-4 sm:py-6 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-8">
             <StaggerItem>
               <h3 className="font-mono text-sm text-custom-secondary">{group.label}</h3>
             </StaggerItem>
-            <div className="flex flex-wrap gap-3">
+            {/* Phones see the first few chips plus a "+N" that expands the row; sm and up see all */}
+            <CollapsibleChips className="flex flex-wrap gap-3">
               {group.skills.map(skill => (
                 <StaggerItem key={skill.name}>
                   <SkillChip skill={skill} />
                 </StaggerItem>
               ))}
-            </div>
+            </CollapsibleChips>
           </div>
         ))}
       </StaggerGroup>
