@@ -1,5 +1,5 @@
 import { siJavascript, siLaravel, siNextdotjs, siNodedotjs, siReact, siWordpress } from "simple-icons"
-import GlassCard from "@/components/shared/GlassCard"
+import MacWindow from "@/components/shared/MacWindow"
 import StatusCard from "@/components/shared/StatusCard"
 
 // Local constants - decorative cards floating around the hero photo
@@ -24,33 +24,13 @@ const TERMINAL = {
   ready: "✓ Ready in 1.2s",
 }
 
-// The glass itself comes from GlassCard; this adds placement and the slow drift
-const CARD_BASE = "absolute shadow-2xl motion-safe:animate-float"
-
-// macOS traffic-light colors: close, minimise, zoom
-const TRAFFIC_LIGHTS = ["#FF5F57", "#FEBC2E", "#28C840"]
-
-const WindowHeader = ({ title }: { title?: string }) => (
-  <div className="relative flex items-center h-8 px-3 border-b border-white/10">
-    <div className="flex gap-1.5">
-      {TRAFFIC_LIGHTS.map(color => (
-        <span key={color} className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-      ))}
-    </div>
-    {title && (
-      <span className="absolute inset-x-0 text-center font-mono text-[11px] text-custom-secondary">{title}</span>
-    )}
-  </div>
-)
-
 const HeroCards = () => (
   <div aria-hidden="true" className="select-none">
     {/* Neck height, tucked against the left of the photo */}
-    <StatusCard className={`${CARD_BASE} top-[27%] right-[70%] hidden xl:block`} style={{ animationDelay: "-1s" }} />
+    <StatusCard className="absolute top-[27%] right-[70%] hidden xl:block" floatDelay="-1s" />
 
     {/* Head height, just right of the photo */}
-    <GlassCard className={`${CARD_BASE} top-[19%] -right-24 hidden xl:block w-60`} style={{ animationDelay: "-2s" }}>
-      <WindowHeader />
+    <MacWindow className="absolute top-[19%] -right-24 hidden xl:block w-60" floatDelay="-2s">
       <div className="grid grid-cols-3 gap-5 px-6 py-5">
         {STACK_ICONS.map(({ icon, color }) => (
           <svg
@@ -64,13 +44,13 @@ const HeroCards = () => (
           </svg>
         ))}
       </div>
-    </GlassCard>
+    </MacWindow>
 
-    <GlassCard
-      className={`${CARD_BASE} bottom-[4%] right-[65%] hidden xl:block xl:w-80 2xl:w-96 font-mono text-xs leading-6`}
-      style={{ animationDelay: "-4s" }}>
-      <WindowHeader title={TERMINAL.title} />
-      <div className="p-5 whitespace-nowrap overflow-hidden">
+    <MacWindow
+      className="absolute bottom-[4%] right-[65%] hidden xl:block xl:w-80 2xl:w-96"
+      title={TERMINAL.title}
+      floatDelay="-4s">
+      <div className="p-5 whitespace-nowrap overflow-hidden font-mono text-xs leading-6">
         <p>
           <span className="text-custom-accent">{TERMINAL.prompt}</span>{" "}
           <span className="text-custom-foreground">{TERMINAL.command}</span>
@@ -90,7 +70,7 @@ const HeroCards = () => (
           <span className="inline-block w-2 h-3.5 ml-1 align-middle bg-custom-accent motion-safe:animate-blink" />
         </p>
       </div>
-    </GlassCard>
+    </MacWindow>
   </div>
 )
 

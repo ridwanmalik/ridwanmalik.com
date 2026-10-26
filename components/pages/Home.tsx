@@ -39,7 +39,12 @@ const Home = () => {
           the text column and the floating cards opt back in */}
       <div className="pointer-events-none relative flex-1 flex flex-col">
         <div className="container mx-auto flex-1 flex flex-col lg:flex-row justify-center items-center h-full gap-8">
-          <StaggerGroup className="pointer-events-auto relative z-20 w-full lg:flex-1" stagger={0.12}>
+          {/* The column's boxes are full width, and the terminal card slides under their empty
+              right side, so the column itself is click-through. Only real content opts back in:
+              text, links, buttons and the tech words with hover cards (.cursor-pointer). */}
+          <StaggerGroup
+            className="pointer-events-none [&_a]:pointer-events-auto [&_button]:pointer-events-auto [&_.cursor-pointer]:pointer-events-auto [&_p]:pointer-events-auto [&_h1]:pointer-events-auto [&_h2]:pointer-events-auto [&_dl]:pointer-events-auto relative z-20 w-full lg:flex-1"
+            stagger={0.12}>
             <div className="space-y-4">
               <StaggerItem from="up">
                 <p className="text-custom-accent font-mono text-sm sm:text-base md:text-lg">{PERSONAL_INFO.intro}</p>
