@@ -80,16 +80,10 @@ const config: Config = {
           "0%, 49%": { opacity: "1" },
           "50%, 100%": { opacity: "0" },
         },
-        // For paths with pathLength="1": a short dash travels from start to end
-        route: {
-          "0%": { strokeDashoffset: "0.2" },
-          "100%": { strokeDashoffset: "-1" },
-        },
       },
       animation: {
         float: "float 6s ease-in-out infinite",
         blink: "blink 1s step-end infinite",
-        route: "route 3s ease-in-out infinite",
       },
       letterSpacing: {
         "15": "0.15em",
