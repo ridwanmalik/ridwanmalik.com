@@ -1,6 +1,6 @@
-import { CodeXml } from "lucide-react"
 import { siJavascript, siLaravel, siNextdotjs, siNodedotjs, siReact, siWordpress } from "simple-icons"
 import GlassCard from "@/components/shared/GlassCard"
+import StatusCard from "@/components/shared/StatusCard"
 
 // Local constants - decorative cards floating around the hero photo
 const STACK_ICONS = [
@@ -45,11 +45,11 @@ const WindowHeader = ({ title }: { title?: string }) => (
 
 const HeroCards = () => (
   <div aria-hidden="true" className="select-none">
-    <GlassCard className={`${CARD_BASE} top-[17%] -left-20 hidden lg:flex items-center justify-center w-28 h-20`}>
-      <CodeXml className="w-10 h-10 text-custom-accent" strokeWidth={1.5} />
-    </GlassCard>
+    {/* Neck height, tucked against the left of the photo */}
+    <StatusCard className={`${CARD_BASE} top-[29%] right-[76%] hidden xl:block`} style={{ animationDelay: "-1s" }} />
 
-    <GlassCard className={`${CARD_BASE} top-[10%] -right-28 hidden xl:block w-60`} style={{ animationDelay: "-2s" }}>
+    {/* Head height, just right of the photo */}
+    <GlassCard className={`${CARD_BASE} top-[19%] -right-24 hidden xl:block w-60`} style={{ animationDelay: "-2s" }}>
       <WindowHeader />
       <div className="grid grid-cols-3 gap-5 px-6 py-5">
         {STACK_ICONS.map(({ icon, color }) => (

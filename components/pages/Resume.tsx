@@ -5,6 +5,7 @@ import { Fragment, useEffect, useRef, useState } from "react"
 import { motion, useInView, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "motion/react"
 import { Download } from "lucide-react"
 import { Reveal } from "@/components/shared"
+import { useTypingLoop } from "@/lib/hooks"
 import { PERSONAL_INFO, RESUME_SKILLS, SECTION_TITLES } from "@/lib/constants"
 import {
   RESUME_LANGUAGES,
@@ -130,39 +131,8 @@ interface TypingProps {
   instant: boolean
 }
 
-// Each step schedules the next: type a character, hold when full, backspace, hold when
-// empty, repeat. setState only runs inside the timeout, never synchronously in the effect.
-const useTypewriter = (text: string, active: boolean) => {
-  const [count, setCount] = useState(0)
-  const [deleting, setDeleting] = useState(false)
-
-  useEffect(() => {
-    if (!active) return
-
-    let wait = TYPING.typeChar
-    let next = () => setCount(c => c + 1)
-    if (!deleting && count === text.length) {
-      wait = TYPING.holdFull
-      next = () => setDeleting(true)
-    } else if (deleting && count === 0) {
-      wait = TYPING.holdEmpty
-      next = () => setDeleting(false)
-    } else if (deleting) {
-      wait = TYPING.deleteChar
-      next = () => setCount(c => c - 1)
-    } else if (count === 0) {
-      wait = TYPING.holdEmpty
-    }
-
-    const id = setTimeout(next, wait * 1000)
-    return () => clearTimeout(id)
-  }, [active, count, deleting, text.length])
-
-  return text.slice(0, count)
-}
-
 const TypedName = ({ play, instant }: TypingProps) => {
-  const typed = useTypewriter(PERSONAL_INFO.name, play && !instant)
+  const typed = useTypingLoop(PERSONAL_INFO.name, play && !instant, TYPING)
 
   if (instant) return <>{PERSONAL_INFO.name}</>
 

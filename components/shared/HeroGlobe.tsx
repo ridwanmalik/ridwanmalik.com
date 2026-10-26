@@ -108,7 +108,7 @@ const HeroGlobe = ({ className }: { className?: string }) => (
       />
       <path d={GLOBE.graticule} fill="none" stroke="currentColor" strokeOpacity={0.12} strokeWidth={0.5} />
       {/* Stroke set on the group, not the path, so GlobeSpotlight's <use> can restyle it */}
-      <g stroke="currentColor" strokeOpacity={0.45} strokeWidth={1.3} strokeLinecap="round">
+      <g stroke="currentColor" strokeOpacity={0.85} strokeWidth={1.3} strokeLinecap="round">
         <path id={DOTS_ID} d={GLOBE.landDots} />
       </g>
       <path d={GLOBE.homeDots} stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" />
