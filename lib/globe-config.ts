@@ -8,7 +8,7 @@ export type LonLat = [number, number]
 export const GLOBE_HOME = {
   name: "Jashore",
   label: "Jashore, Bangladesh",
-  note: "Home base. Every line on this globe starts here",
+  note: "A small, beautiful city I call home",
   coords: [89.21, 23.17] as LonLat,
   countryId: "050",
 }
