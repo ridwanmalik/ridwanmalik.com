@@ -1,8 +1,15 @@
 import { siJavascript, siLaravel, siNextdotjs, siNodedotjs, siReact, siWordpress } from "simple-icons"
+import { SquareTerminal } from "lucide-react"
 import MacWindow from "@/components/shared/MacWindow"
 import StatusCard from "@/components/shared/StatusCard"
 
 // Local constants - decorative cards floating around the hero photo
+// Tooltips on a minimised window's icon (click it to restore the window)
+const MINIMIZED_LABELS = {
+  stack: "Tech stack",
+  terminal: "Terminal",
+}
+
 const STACK_ICONS = [
   { icon: siReact, color: "#61DAFB" },
   { icon: siJavascript, color: "#F7DF1E" },
@@ -30,7 +37,17 @@ const HeroCards = () => (
     <StatusCard className="absolute top-[27%] right-[70%] hidden xl:block" floatDelay="-1s" />
 
     {/* Head height, just right of the photo */}
-    <MacWindow className="absolute top-[19%] -right-24 hidden xl:block w-60" floatDelay="-2s">
+    <MacWindow
+      className="absolute top-[19%] -right-24 hidden xl:block w-60"
+      minimizedLabel={MINIMIZED_LABELS.stack}
+      minimizeTo="left"
+      minimizedShift={24}
+      minimizedIcon={
+        <svg viewBox="0 0 24 24" className="w-7 h-7" fill="#61DAFB" aria-hidden>
+          <path d={siReact.path} />
+        </svg>
+      }
+      floatDelay="-2s">
       <div className="grid grid-cols-3 gap-5 px-6 py-5">
         {STACK_ICONS.map(({ icon, color }) => (
           <svg
@@ -49,6 +66,10 @@ const HeroCards = () => (
     <MacWindow
       className="absolute bottom-[4%] right-[65%] hidden xl:block xl:w-80 2xl:w-96"
       title={TERMINAL.title}
+      minimizedLabel={MINIMIZED_LABELS.terminal}
+      minimizeTo="right"
+      minimizedShift={-64}
+      minimizedIcon={<SquareTerminal className="w-7 h-7 text-custom-accent" strokeWidth={1.5} />}
       floatDelay="-4s">
       <div className="p-5 whitespace-nowrap overflow-hidden font-mono text-xs leading-6">
         <p>
