@@ -35,7 +35,7 @@ import { Braces, RefreshCw, Workflow } from "lucide-react"
 import Image from "next/image"
 import { SECTION_TITLES } from "@/lib/constants"
 import TechHoverCard from "@/components/shared/TechHoverCard"
-import { Reveal } from "@/components/shared"
+import { StaggerGroup, StaggerItem } from "@/components/shared"
 
 // Local constants - only used in this component (outside component to avoid recreation)
 // Names must match TECHNOLOGIES keys in lib/constants so each chip keeps its hover card.
@@ -59,6 +59,9 @@ const CHIP_STYLES = {
 }
 
 const LIGHT = "#ccd6f6"
+
+// Seconds between each chip appearing (~45 items, so the whole section takes ~1.4s)
+const CHIP_STAGGER = 0.03
 
 const SKILL_GROUPS: { label: string; skills: Skill[] }[] = [
   {
@@ -153,21 +156,24 @@ const Technologies = () => (
         <div className="flex-1 h-px bg-custom-secondary/40 ml-4 sm:ml-8"></div>
       </div>
 
-      {/* One row per area: label on the left, logo chips on the right (stacked on mobile) */}
-      <div className="divide-y divide-white/5">
-        {SKILL_GROUPS.map((group, index) => (
-          <Reveal key={group.label} delay={index * 0.06}>
-            <div className="grid gap-3 py-5 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-8">
+      {/* One row per area: label on the left, logo chips on the right (stacked on mobile).
+          Once in view, each label and chip appears one after another, top to bottom. */}
+      <StaggerGroup inView stagger={CHIP_STAGGER} className="divide-y divide-white/5">
+        {SKILL_GROUPS.map(group => (
+          <div key={group.label} className="grid gap-3 py-6 sm:grid-cols-[10rem_1fr] sm:items-center sm:gap-8">
+            <StaggerItem>
               <h3 className="font-mono text-sm text-custom-secondary">{group.label}</h3>
-              <div className="flex flex-wrap gap-2">
-                {group.skills.map(skill => (
-                  <SkillChip key={skill.name} skill={skill} />
-                ))}
-              </div>
+            </StaggerItem>
+            <div className="flex flex-wrap gap-3">
+              {group.skills.map(skill => (
+                <StaggerItem key={skill.name}>
+                  <SkillChip skill={skill} />
+                </StaggerItem>
+              ))}
             </div>
-          </Reveal>
+          </div>
         ))}
-      </div>
+      </StaggerGroup>
     </div>
   </section>
 )
