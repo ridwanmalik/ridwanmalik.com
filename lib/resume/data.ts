@@ -1,7 +1,7 @@
 import { CERTIFICATIONS, EDUCATION, EXPERIENCES, PERSONAL_INFO, PROJECTS, SOCIAL_LINKS } from "@/lib/constants"
 
 // What goes on the resume, shared by the PDF (lib/resume/ResumeDocument.tsx) and the
-// on-site preview (components/pages/Resume.tsx) so the two can never drift apart.
+// on-site preview (components/shared/ResumePreview.tsx) so the two can never drift apart.
 
 // Recent roles carry the detail; older roles are condensed.
 const MAX_ROLES = 7

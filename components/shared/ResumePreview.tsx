@@ -4,9 +4,8 @@ import type { CSSProperties, MouseEvent, ReactNode } from "react"
 import { Fragment, useEffect, useRef, useState } from "react"
 import { motion, useInView, useMotionTemplate, useMotionValue, useReducedMotion, useSpring } from "motion/react"
 import { Download } from "lucide-react"
-import { Reveal } from "@/components/shared"
 import { useTypingLoop } from "@/lib/hooks"
-import { PERSONAL_INFO, RESUME_SKILLS, SECTION_TITLES } from "@/lib/constants"
+import { PERSONAL_INFO, RESUME_SKILLS } from "@/lib/constants"
 import {
   RESUME_LANGUAGES,
   getResumeCertifications,
@@ -18,14 +17,14 @@ import {
 } from "@/lib/resume/data"
 
 // Local constants - only used in this component (outside component to avoid recreation)
+const DOWNLOAD = {
+  // Same word as the header's Resume button
+  text: "Resume",
+  label: "Download resume (PDF)",
+  href: PERSONAL_INFO.resume,
+}
+
 const RESUME_CONTENT = {
-  title: "Everything on one page.",
-  description:
-    "My roles, projects and stack, trimmed to a single page you can read in a minute. It's generated from this site's own data, so it's never out of date, and it's laid out to pass ATS filters as cleanly as it reads for people.",
-  cta: {
-    text: "Download PDF",
-    href: PERSONAL_INFO.resume,
-  },
   headings: {
     summary: "Summary",
     skills: "Technical Skills",
@@ -154,10 +153,13 @@ interface ResumeSheetProps extends Partial<TypingProps> {
   highlight?: string | null
 }
 
+// Arial first, not Helvetica: unofficial "Helvetica" fonts from free font packs (installed on
+// some Windows machines) draw the bold "E" too small, so headings read "TeCHNICAL". Arial has
+// the same metrics as Helvetica and ships on both Windows and macOS.
 const ResumeSheet = ({ play = true, instant = true, highlight = null }: ResumeSheetProps) => (
   <div
     style={PAPER_VARS}
-    className="p-[3.6em] text-[1.48cqw] leading-[1.25] text-[color:var(--body)] [font-family:Helvetica,Arial,sans-serif]">
+    className="p-[3.6em] text-[1.48cqw] leading-[1.25] text-[color:var(--body)] [font-family:Arial,Helvetica,sans-serif]">
     <p className="text-[2.27em] font-bold leading-[1.2] tracking-[0.02em] text-[color:var(--ink)]">
       <TypedName play={play} instant={instant} />
     </p>
@@ -282,7 +284,8 @@ const ResumeSheet = ({ play = true, instant = true, highlight = null }: ResumeSh
   </div>
 )
 
-const Resume = () => {
+// The animated glass resume sheet, shown beside the About text.
+const ResumePreview = ({ className = "" }: { className?: string }) => {
   const stageRef = useRef<HTMLDivElement>(null)
   const inView = useInView(stageRef, { once: true, margin: "0px 0px -20% 0px" })
   const reduceMotion = useReducedMotion()
@@ -334,96 +337,96 @@ const Resume = () => {
   const printEnd = PRINT.scanDelay + PRINT.scanDuration
 
   return (
-    <section id="resume" className="w-full pt-10 pb-20 sm:pt-20">
-      <div className="container mx-auto">
-        <div className="flex items-center mb-8 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl font-bold text-custom-accent">{SECTION_TITLES.resume}</h2>
-          <div className="flex-1 h-px bg-custom-secondary/40 ml-4 sm:ml-8"></div>
-        </div>
+    <div className={className}>
+      <div
+        ref={stageRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={resetTilt}
+        className="group relative mx-auto w-full max-w-[620px] [container-type:inline-size] [perspective:1600px]">
+        {/* Soft glow that blooms once the page has printed */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-custom-accent/[0.04] blur-3xl"
+          initial={{ opacity: 0 }}
+          animate={play ? { opacity: 1 } : undefined}
+          transition={timing(printEnd - 0.4, 1)}
+        />
 
-        <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,620px)] lg:gap-12">
-          <Reveal className="space-y-6">
-            <h3 className="text-2xl sm:text-3xl font-bold text-custom-foreground">{RESUME_CONTENT.title}</h3>
-            <p className="text-custom-secondary text-sm md:text-base leading-relaxed">{RESUME_CONTENT.description}</p>
-            <div className="pt-2">
-              <a
-                href={RESUME_CONTENT.cta.href}
-                className="btn-pop text-sm inline-flex items-center gap-2 border border-accent text-custom-accent px-6 py-3 rounded hover:bg-accent/10 transition-colors font-mono">
-                <Download className="h-4 w-4" />
-                {RESUME_CONTENT.cta.text}
-              </a>
-            </div>
-          </Reveal>
-
-          <div
-            ref={stageRef}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={resetTilt}
-            className="relative mx-auto w-full max-w-[620px] [container-type:inline-size] [perspective:1600px]">
-            {/* Soft glow that blooms once the page has printed */}
-            <motion.div
-              aria-hidden
-              className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-custom-accent/[0.04] blur-3xl"
-              initial={{ opacity: 0 }}
-              animate={play ? { opacity: 1 } : undefined}
-              transition={timing(printEnd - 0.4, 1)}
-            />
-
-            {/* Only the top of the page shows, fading out — a glimpse, not the whole sheet.
+        {/* Only the top of the page shows, fading out — a glimpse, not the whole sheet.
                 The colour blobs sit inside the masked box on purpose: the mask makes this box
                 the glass's backdrop root, so the blur can only see what is in here. */}
+        <motion.div
+          style={{ rotateX, rotateY }}
+          className="relative aspect-[210/150] [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]">
+          <motion.div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            initial={{ opacity: 0 }}
+            animate={play ? { opacity: 1 } : undefined}
+            transition={timing(PRINT.paper, 0.8)}>
+            <div className="absolute left-[8%] top-[6%] size-[45%] rounded-full bg-custom-accent/10 blur-3xl" />
+            <div className="absolute right-[4%] top-[35%] size-[50%] rounded-full bg-blue-500/10 blur-3xl" />
+          </motion.div>
+          <motion.div
+            className="absolute inset-0 overflow-hidden rounded-xl border border-white/10 bg-oxford-blue/60 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl"
+            initial={{ opacity: 0 }}
+            animate={play ? { opacity: 1 } : undefined}
+            transition={timing(PRINT.paper, 0.6)}>
             <motion.div
-              style={{ rotateX, rotateY }}
-              className="relative aspect-[210/150] [mask-image:linear-gradient(to_bottom,#000_60%,transparent)]">
-              <motion.div
-                aria-hidden
-                className="pointer-events-none absolute inset-0"
-                initial={{ opacity: 0 }}
-                animate={play ? { opacity: 1 } : undefined}
-                transition={timing(PRINT.paper, 0.8)}>
-                <div className="absolute left-[8%] top-[6%] size-[45%] rounded-full bg-custom-accent/10 blur-3xl" />
-                <div className="absolute right-[4%] top-[35%] size-[50%] rounded-full bg-blue-500/10 blur-3xl" />
-              </motion.div>
-              <motion.div
-                className="absolute inset-0 overflow-hidden rounded-xl border border-white/10 bg-oxford-blue/60 bg-gradient-to-br from-white/[0.06] via-white/[0.02] to-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl"
-                initial={{ opacity: 0 }}
-                animate={play ? { opacity: 1 } : undefined}
-                transition={timing(PRINT.paper, 0.6)}>
-                <motion.div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-0"
-                  style={{ background: spotlight, opacity: spotOpacity }}
-                />
-                <motion.div
-                  className="absolute inset-0"
-                  initial={{ clipPath: "inset(0 0 100% 0)" }}
-                  animate={play ? { clipPath: "inset(0 0 0% 0)" } : undefined}
-                  transition={{ ...timing(PRINT.scanDelay, PRINT.scanDuration), ease: "linear" }}>
-                  <ResumeSheet play={play} instant={!!reduceMotion} highlight={HIGHLIGHTS[highlightIndex] ?? null} />
-                </motion.div>
-              </motion.div>
-
-              {/* Scan line that "prints" the page from top to bottom */}
-              {!reduceMotion && (
-                <motion.div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-[-2%] h-[2px] rounded-full bg-custom-accent shadow-[0_0_16px_4px_rgba(124,250,214,0.65)]"
-                  initial={{ top: "0%", opacity: 0 }}
-                  animate={play ? { top: ["0%", "100%"], opacity: [1, 1, 0] } : undefined}
-                  transition={{
-                    delay: PRINT.scanDelay,
-                    duration: PRINT.scanDuration,
-                    ease: "linear",
-                    times: [0, 0.97, 1],
-                  }}
-                />
-              )}
+              aria-hidden
+              className="pointer-events-none absolute inset-0"
+              style={{ background: spotlight, opacity: spotOpacity }}
+            />
+            <motion.div
+              className="absolute inset-0"
+              initial={{ clipPath: "inset(0 0 100% 0)" }}
+              animate={play ? { clipPath: "inset(0 0 0% 0)" } : undefined}
+              transition={{ ...timing(PRINT.scanDelay, PRINT.scanDuration), ease: "linear" }}>
+              <ResumeSheet play={play} instant={!!reduceMotion} highlight={HIGHLIGHTS[highlightIndex] ?? null} />
             </motion.div>
-          </div>
-        </div>
+          </motion.div>
+
+          {/* Clicking anywhere on the sheet downloads it. A mouse-only shortcut: the labelled
+              link below is the one keyboard and screen-reader users get, so this is hidden
+              from them. It covers the sheet's own links, which are only a preview here. */}
+          <a href={DOWNLOAD.href} aria-hidden tabIndex={-1} className="absolute inset-0 z-[5] rounded-xl" />
+
+          {/* Download, inside the tilt so it moves with the page. It shares the sheet's font
+              size (1.48cqw), so em values line up with the sheet: right-[3.6em] matches its
+              p-[3.6em], and top-[6.56em] is the vertical middle of the name + two contact
+              lines (3.6em padding + half of their ~5.93em height). -mr-2 cancels the p-2 hit
+              area so the icon itself, not its padding, sits on the margin. */}
+          <a
+            href={DOWNLOAD.href}
+            aria-label={DOWNLOAD.label}
+            title={DOWNLOAD.label}
+            className="absolute right-[3.6em] top-[6.56em] z-10 -mr-2 -translate-y-1/2 p-2 text-[1.48cqw] text-custom-secondary transition-colors group-hover:text-custom-accent">
+            {/* The label sets its own size; only the positioning above uses the sheet's em */}
+            <span className="inline-flex items-center gap-1.5 font-mono text-xs">
+              <Download className="h-4 w-4" />
+              {DOWNLOAD.text}
+            </span>
+          </a>
+
+          {/* Scan line that "prints" the page from top to bottom */}
+          {!reduceMotion && (
+            <motion.div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-[-2%] h-[2px] rounded-full bg-custom-accent shadow-[0_0_16px_4px_rgba(124,250,214,0.65)]"
+              initial={{ top: "0%", opacity: 0 }}
+              animate={play ? { top: ["0%", "100%"], opacity: [1, 1, 0] } : undefined}
+              transition={{
+                delay: PRINT.scanDelay,
+                duration: PRINT.scanDuration,
+                ease: "linear",
+                times: [0, 0.97, 1],
+              }}
+            />
+          )}
+        </motion.div>
       </div>
-    </section>
+    </div>
   )
 }
 
-export default Resume
+export default ResumePreview

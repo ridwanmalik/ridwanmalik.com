@@ -1,6 +1,7 @@
 import { SECTION_TITLES } from "@/lib/constants"
 import TechWithHoverCard from "@/components/shared/TechWithHoverCard"
 import { Reveal } from "@/components/shared"
+import ResumePreview from "@/components/shared/ResumePreview"
 import { ridwanHeadshot } from "@/lib/assets"
 import Image from "next/image"
 
@@ -27,13 +28,19 @@ const About = () => {
           <div className="flex-1 h-px bg-custom-secondary/40 ml-4 sm:ml-8"></div>
         </div>
 
-        <Reveal className="space-y-6 text-custom-secondary text-sm md:text-base leading-relaxed">
-          {ABOUT_CONTENT.paragraphs.map((paragraph, index) => (
-            <div key={index}>
-              <TechWithHoverCard text={paragraph} />
-            </div>
-          ))}
-        </Reveal>
+        {/* Text on the left, the glass resume on the right (desktop only; phones get the headshot) */}
+        <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,540px)] lg:items-center lg:gap-14">
+          <Reveal className="space-y-6 text-custom-secondary text-sm md:text-base leading-relaxed">
+            {ABOUT_CONTENT.paragraphs.map((paragraph, index) => (
+              <div key={index}>
+                <TechWithHoverCard text={paragraph} />
+              </div>
+            ))}
+          </Reveal>
+          <Reveal className="hidden lg:block" from="right" delay={0.1}>
+            <ResumePreview />
+          </Reveal>
+        </div>
 
         {/* Mobile only: desktop already shows the full-length photo in the hero */}
         <Reveal className="lg:hidden mx-auto mt-14 w-[70%] max-w-[300px]">
