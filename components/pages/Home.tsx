@@ -1,4 +1,6 @@
 import Header from "@/components/shared/Header"
+import HeroBackdrop from "@/components/shared/HeroBackdrop"
+import HeroCards from "@/components/shared/HeroCards"
 import SocialIconMenu from "@/components/shared/SocialIconMenu"
 import { ridwan } from "@/lib/assets"
 import { PERSONAL_INFO } from "@/lib/constants"
@@ -22,11 +24,16 @@ const HOME_CONTENT = {
 
 const Home = () => {
   return (
-    <section id="home" className="min-h-screen w-full flex flex-col bg-gradient-to-t from-[#020b16]/50 to-transparent">
-      <Header className="w-full" />
-      <div className="flex-1 flex flex-col">
+    <section
+      id="home"
+      className="relative min-h-screen w-full flex flex-col overflow-hidden bg-gradient-to-t from-[#020b16]/50 to-transparent">
+      <HeroBackdrop />
+      <Header className="relative z-30 w-full" />
+      {/* Mouse events pass through the empty space so the globe behind can be hovered;
+          the text column and the floating cards opt back in */}
+      <div className="pointer-events-none relative flex-1 flex flex-col">
         <div className="container mx-auto flex-1 flex flex-col lg:flex-row justify-center items-center h-full gap-8">
-          <StaggerGroup className="w-full lg:flex-1" stagger={0.12}>
+          <StaggerGroup className="pointer-events-auto relative z-20 w-full lg:flex-1" stagger={0.12}>
             <div className="space-y-4">
               <StaggerItem from="up">
                 <p className="text-custom-accent font-mono text-sm sm:text-base md:text-lg">{PERSONAL_INFO.intro}</p>
@@ -62,13 +69,15 @@ const Home = () => {
               </StaggerItem>
             </div>
           </StaggerGroup>
-          <Reveal className="hidden lg:flex justify-end items-end self-end" from="right" delay={0.15}>
+          <Reveal className="relative hidden lg:flex justify-end items-end self-end" from="right" delay={0.15}>
+            <HeroCards />
             <Image
               src={ridwan}
               alt={HOME_CONTENT.profileImage.alt}
               width={HOME_CONTENT.profileImage.width}
               height={HOME_CONTENT.profileImage.height}
-              className="h-full max-h-[90vh] object-contain pt-8"
+              preload
+              className="pointer-events-none relative z-10 h-full max-h-[90vh] object-contain pt-8"
             />
           </Reveal>
         </div>
