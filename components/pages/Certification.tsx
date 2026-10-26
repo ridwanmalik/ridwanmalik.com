@@ -17,7 +17,8 @@ const Certification = () => {
           <div className="flex-1 h-px bg-custom-secondary/40 ml-4 sm:ml-8"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {/* Phones: compact one-line rows (icon, title + issuer, link icon). sm and up: cards. */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
           {CERTIFICATION_CONTENT.certifications.map((cert, index) => (
             <Reveal
               key={index}
@@ -28,28 +29,31 @@ const Certification = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 href={cert.url}
-                className="h-full relative overflow-hidden block bg-slate-800/50 p-6 rounded-lg hover:bg-slate-800/70 transition-all duration-300 group border border-slate-700/50 hover:border-custom-accent/30 cursor-pointer">
-                {/* Faint watermark icon — mobile only */}
-                <Award className="pointer-events-none absolute bottom-1 -right-2 h-24 w-24 text-custom-accent opacity-5 sm:hidden" />
+                className="h-full relative overflow-hidden flex items-center gap-3 sm:block bg-slate-800/50 px-4 py-3 sm:p-6 rounded-lg hover:bg-slate-800/70 transition-all duration-300 group border border-slate-700/50 hover:border-custom-accent/30 cursor-pointer">
+                {/* Leading icon — mobile only */}
+                <Award className="w-5 h-5 shrink-0 text-custom-accent sm:hidden" />
 
-                <div className="relative">
+                <div className="relative flex-1 min-w-0">
                   {/* Top row (icon + external link) — desktop only */}
                   <div className="hidden sm:flex justify-between items-start mb-4">
                     <Award className="w-8 h-8 text-custom-accent group-hover:scale-110 transition-transform duration-300" />
                     <ExternalLink className="w-5 h-5 text-custom-secondary group-hover:text-custom-accent transition-colors" />
                   </div>
 
-                  <h3 className="text-lg font-semibold text-custom-foreground mb-2 group-hover:text-custom-accent transition-colors">
+                  <h3 className="text-sm sm:text-lg font-semibold text-custom-foreground sm:mb-2 group-hover:text-custom-accent transition-colors">
                     {cert.title}
                   </h3>
 
-                  <p className="text-custom-secondary text-sm mb-4">{cert.issuer}</p>
+                  <p className="text-custom-secondary text-xs sm:text-sm sm:mb-4">{cert.issuer}</p>
 
-                  <div className="inline-flex items-center text-custom-accent text-sm">
+                  <div className="hidden sm:inline-flex items-center text-custom-accent text-sm">
                     View Certificate
                     <ExternalLink className="w-3 h-3 ml-1" />
                   </div>
                 </div>
+
+                {/* Trailing link icon — mobile only */}
+                <ExternalLink className="w-4 h-4 shrink-0 text-custom-secondary group-hover:text-custom-accent transition-colors sm:hidden" />
               </Link>
             </Reveal>
           ))}
