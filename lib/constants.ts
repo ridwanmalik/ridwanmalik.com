@@ -1,4 +1,4 @@
-const TOTAL_YEARS_EXPERIENCE = new Date().getFullYear() - 2018
+export const TOTAL_YEARS_EXPERIENCE = new Date().getFullYear() - 2018
 
 // The job title the resume summary opens with. Applications go out mirroring the
 // target posting's exact title, so this is overridable per download via
@@ -308,16 +308,30 @@ export const PROJECTS = {
       image: "/assets/zenith.png",
     },
     {
-      title: "Bangla Iqra Academy",
+      title: "HealthFlow",
       description:
-        "A full-featured Learning Management System (LMS) for an online Quran and Islamic education academy. Built with Next.js and Supabase, it handles course management, student enrollment and authentication, admin dashboards with sortable data tables, and cloud-based media storage.",
-      tech: ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS"],
-      external: "https://banglaiqraacademy.com/",
-      image: "/assets/bangla-iqra-academy.png",
+        "A healthcare platform connecting hospitals, clinics, doctors, diagnostic centers and pharmacies in one place. Built with Next.js and Supabase, it lets patients book appointments and view reports and invoices, while providers manage patient records, wards and beds, lab orders, pharmacy stock and billing.",
+      tech: ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS", "shadcn/ui"],
+      external: "https://healthflowbd.com",
+      image: "/assets/healthflow.png",
       hideFromResume: true,
     },
   ],
   other: [
+    {
+      title: "Bangla Iqra Academy",
+      description:
+        "A Learning Management System for an online Quran and Islamic education academy, with course management, student enrollment and admin dashboards.",
+      tech: ["Next.js", "React", "TypeScript", "Supabase", "Tailwind CSS", "shadcn/ui"],
+      external: "https://banglaiqraacademy.com/",
+    },
+    {
+      title: "SourceExpert Website",
+      description:
+        "The company website for SourceExpert, a software engineering firm with teams in the USA and Bangladesh, showcasing its web, mobile, AI and cloud services.",
+      tech: ["Next.js", "React"],
+      external: "https://sourceexpert.net",
+    },
     {
       title: "ETS Telco ISP Website",
       description:
@@ -334,11 +348,11 @@ export const PROJECTS = {
       external: "https://rio-watch.vercel.app/",
     },
     {
-      title: "Garam Masala Food Ordering",
+      title: "Next SaaS Admin UI",
       description:
-        "A PHP-based food ordering system with table booking capabilities, which boosted customer convenience and reservation volume for the restaurant.",
-      tech: ["PHP", "MySQL", "JavaScript", "CSS"],
-      external: "https://garam-masala.nl",
+        "An open-source admin dashboard template for indie SaaS products, with a collapsible sidebar layout, dark and light themes, accent colors, a sortable and searchable data table, and a settings page.",
+      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "shadcn/ui"],
+      github: "https://github.com/ridwanmalik/next-saas-admin-ui",
     },
     {
       title: "SENSE HAIR",
@@ -346,6 +360,13 @@ export const PROJECTS = {
         "A professional hair salon booking website designed and built with Next.js. The platform enhances booking accuracy and user engagement with a beautiful, intuitive interface for stylist appointments and service scheduling.",
       tech: ["Next.js", "React", "Tailwind CSS", "Laravel", "MySQL"],
       external: "https://sensehair.nl",
+    },
+    {
+      title: "Garam Masala Food Ordering",
+      description:
+        "A PHP-based food ordering system with table booking capabilities, which boosted customer convenience and reservation volume for the restaurant.",
+      tech: ["PHP", "MySQL", "JavaScript", "CSS"],
+      external: "https://garam-masala.nl",
     },
     {
       title: "Tournament Management System",
@@ -367,6 +388,20 @@ export const PROJECTS = {
         "An Online Exam System for over 10,000 users, implementing secure, scalable testing features with real-time monitoring.",
       tech: ["PHP", "HTML", "CSS"],
       external: null,
+    },
+    {
+      title: "Uniget BD",
+      description:
+        "A marketing website for an air and ocean freight forwarding company operating since 2005, with offices in Dhaka and Chittagong.",
+      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "shadcn/ui"],
+      external: "https://hub-freight.vercel.app",
+    },
+    {
+      title: "Verified by Tenants",
+      description:
+        "A rental review platform that collects real tenant reviews and verifies every claim with documentation, showing the reality behind each rental.",
+      tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "shadcn/ui"],
+      external: "https://verifiedbytenants.vercel.app",
     },
   ],
 }
@@ -739,6 +774,15 @@ export const TECHNOLOGIES = {
     color: "bg-cyan-500",
     aliases: ["tailwind", "tailwindcss"],
   },
+  "shadcn/ui": {
+    name: "shadcn/ui",
+    category: "UI Components",
+    description:
+      "Accessible, customizable React components built on Radix UI and Tailwind CSS, copied into the project so you own the code.",
+    features: ["Radix UI primitives", "Tailwind styling", "Accessible by default", "Fully customizable"],
+    color: "bg-zinc-700",
+    aliases: ["shadcn", "shadcn ui"],
+  },
   Bootstrap: {
     name: "Bootstrap",
     category: "CSS Framework",
@@ -892,6 +936,8 @@ export const TECHNICAL_SKILLS = [
   { name: "WordPress", level: 100 },
   { name: "WooCommerce", level: 100, hideOnMobile: true },
   { name: "Sass", level: 100 },
+  { name: "Tailwind CSS", level: 100, hideFromSkills: true },
+  { name: "shadcn/ui", level: 100, hideFromSkills: true },
   { name: "Vue.js", level: 80, hideOnMobile: true },
   { name: "Ionic", level: 80, hideOnMobile: true },
   { name: "Firebase", level: 80 },

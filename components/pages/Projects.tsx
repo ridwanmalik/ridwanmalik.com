@@ -89,7 +89,11 @@ const Projects = () => {
                   <div className={`w-full lg:w-2/5 ${index % 2 === 1 ? "lg:text-left" : "lg:text-right"}`}>
                     <p className="hidden lg:block text-custom-accent text-sm font-mono mb-2">Featured Project</p>
                     <h3 className="hidden lg:block text-2xl font-semibold text-custom-foreground mb-4">
-                      <Link href={project.external} target="_blank" rel="noopener noreferrer" className="hover:text-custom-accent transition-colors">
+                      <Link
+                        href={project.external}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-custom-accent transition-colors">
                         {project.title}
                       </Link>
                     </h3>
@@ -170,13 +174,27 @@ const Projects = () => {
 
                   <div className="relative">
                     <h3 className="text-xl font-semibold text-custom-foreground mb-3 group-hover:text-custom-accent transition-colors">
-                      {project.title}
+                      {project.external || project.github ? (
+                        // Stretched link: its ::after covers the whole card (-inset-6 undoes the
+                        // card's p-6), so clicking anywhere on the card opens the project
+                        <Link
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          href={(project.external || project.github) as string}
+                          className="focus:outline-none after:absolute after:-inset-6 after:rounded-lg focus-visible:after:ring-2 focus-visible:after:ring-custom-accent">
+                          {project.title}
+                        </Link>
+                      ) : (
+                        project.title
+                      )}
                     </h3>
-                    <div className="text-custom-secondary mb-4 text-sm md:text-base">
+                    {/* Above the stretched link, but click-through except on the tech words,
+                        which keep their hover cards */}
+                    <div className="relative z-10 pointer-events-none [&_.cursor-pointer]:pointer-events-auto text-custom-secondary mb-4 text-sm md:text-base">
                       <TechWithHoverCard text={project.description} />
                     </div>
 
-                    <div className="flex flex-wrap gap-2 font-mono text-sm text-custom-secondary mb-4">
+                    <div className="relative z-10 pointer-events-none [&_.cursor-pointer]:pointer-events-auto flex flex-wrap gap-2 font-mono text-sm text-custom-secondary mb-4">
                       {project.tech.map((tech, techIndex) => (
                         <span key={techIndex}>
                           <TechWithHoverCard text={tech} />
@@ -184,13 +202,13 @@ const Projects = () => {
                       ))}
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="relative z-10 flex gap-3 w-fit">
                       {project.github && (
                         <Link
                           target="_blank"
                           rel="noopener noreferrer"
                           href={project.github}
-                          className="btn-pop text-custom-secondary hover:text-custom-accent transition-colors">
+                          className="text-custom-secondary hover:text-custom-accent transition-colors">
                           <Github className="w-5 h-5" />
                         </Link>
                       )}
@@ -199,7 +217,7 @@ const Projects = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           href={project.external}
-                          className="btn-pop text-custom-secondary hover:text-custom-accent transition-colors">
+                          className="text-custom-secondary hover:text-custom-accent transition-colors">
                           <ExternalLink className="w-5 h-5" />
                         </Link>
                       )}

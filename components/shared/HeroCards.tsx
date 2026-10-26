@@ -46,7 +46,7 @@ const WindowHeader = ({ title }: { title?: string }) => (
 const HeroCards = () => (
   <div aria-hidden="true" className="select-none">
     {/* Neck height, tucked against the left of the photo */}
-    <StatusCard className={`${CARD_BASE} top-[29%] right-[76%] hidden xl:block`} style={{ animationDelay: "-1s" }} />
+    <StatusCard className={`${CARD_BASE} top-[27%] right-[70%] hidden xl:block`} style={{ animationDelay: "-1s" }} />
 
     {/* Head height, just right of the photo */}
     <GlassCard className={`${CARD_BASE} top-[19%] -right-24 hidden xl:block w-60`} style={{ animationDelay: "-2s" }}>

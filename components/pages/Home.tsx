@@ -3,7 +3,7 @@ import HeroBackdrop from "@/components/shared/HeroBackdrop"
 import HeroCards from "@/components/shared/HeroCards"
 import SocialIconMenu from "@/components/shared/SocialIconMenu"
 import { ridwan } from "@/lib/assets"
-import { PERSONAL_INFO } from "@/lib/constants"
+import { EXPERIENCES, PERSONAL_INFO, PROJECTS, TOTAL_YEARS_EXPERIENCE } from "@/lib/constants"
 import TechWithHoverCard from "@/components/shared/TechWithHoverCard"
 import Image from "next/image"
 import Link from "next/link"
@@ -20,6 +20,12 @@ const HOME_CONTENT = {
     width: 455,
     height: 1106,
   },
+  // Derived from the site's own data, so they stay true as experience and projects change
+  stats: [
+    { value: `${TOTAL_YEARS_EXPERIENCE}+`, label: "Years of experience" },
+    { value: `${EXPERIENCES.length}`, label: "Companies" },
+    { value: `${PROJECTS.featured.length + PROJECTS.other.length}+`, label: "Projects built" },
+  ],
 }
 
 const Home = () => {
@@ -66,6 +72,16 @@ const Home = () => {
                     <SocialIconMenu orientation="horizontal" size="md" className="gap-4" />
                   </div>
                 </div>
+              </StaggerItem>
+              <StaggerItem from="up">
+                <dl className="mt-8 grid grid-cols-3 max-w-md border-y border-custom-secondary/20 py-4 divide-x divide-custom-secondary/20">
+                  {HOME_CONTENT.stats.map(stat => (
+                    <div key={stat.label} className="flex flex-col-reverse gap-1 px-4 first:pl-0">
+                      <dt className="text-xs text-custom-secondary">{stat.label}</dt>
+                      <dd className="text-2xl sm:text-3xl font-bold text-custom-foreground">{stat.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </StaggerItem>
             </div>
           </StaggerGroup>
