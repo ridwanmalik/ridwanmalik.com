@@ -10,7 +10,6 @@ import {
   siGit,
   siGithub,
   siGithubcopilot,
-  siIonic,
   siJavascript,
   siLaravel,
   siMysql,
@@ -22,16 +21,12 @@ import {
   siReact,
   siReacthookform,
   siRedux,
-  siSass,
   siShadcnui,
-  siStorybook,
   siStripe,
   siSupabase,
   siTailwindcss,
   siTypescript,
   siVercel,
-  siVuedotjs,
-  siWoocommerce,
   siWordpress,
   siZod,
 } from "simple-icons"
@@ -47,12 +42,20 @@ import { Reveal } from "@/components/shared"
 // `color` overrides the brand hex where it's too dark to read on the navy background.
 // Brands missing from simple-icons use their official SVG from public/assets/tech (`image`).
 // Concepts with no logo at all (REST APIs, CI/CD, DevOps) use a lucide icon in the accent colour.
+// `core` marks the main skills; they get a mint border so they stand out from the rest.
 interface Skill {
   name: string
   icon?: SimpleIcon
   image?: string
   lucide?: LucideIcon
   color?: string
+  core?: boolean
+}
+
+const CHIP_STYLES = {
+  base: "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm text-custom-foreground transition-colors",
+  regular: "border-white/10 bg-white/[0.03] hover:border-custom-accent/50 hover:bg-white/[0.06]",
+  core: "border-custom-accent/60 bg-custom-accent/[0.06] hover:border-custom-accent hover:bg-custom-accent/10",
 }
 
 const LIGHT = "#ccd6f6"
@@ -61,9 +64,9 @@ const SKILL_GROUPS: { label: string; skills: Skill[] }[] = [
   {
     label: "Frontend",
     skills: [
-      { name: "Next.js", icon: siNextdotjs, color: LIGHT },
-      { name: "React", icon: siReact },
-      { name: "TypeScript", icon: siTypescript },
+      { name: "Next.js", icon: siNextdotjs, color: LIGHT, core: true },
+      { name: "React", icon: siReact, core: true },
+      { name: "TypeScript", icon: siTypescript, core: true },
       { name: "JavaScript", icon: siJavascript },
       { name: "Tailwind CSS", icon: siTailwindcss },
       { name: "shadcn/ui", icon: siShadcnui, color: LIGHT },
@@ -71,26 +74,22 @@ const SKILL_GROUPS: { label: string; skills: Skill[] }[] = [
       { name: "Motion", image: "/assets/tech/motion.svg" },
       { name: "React Hook Form", icon: siReacthookform },
       { name: "Zod", icon: siZod },
-      { name: "Vue.js", icon: siVuedotjs },
-      { name: "Sass", icon: siSass },
-      { name: "Storybook", icon: siStorybook },
       { name: "Figma", icon: siFigma },
     ],
   },
   {
     label: "Mobile",
     skills: [
-      { name: "React Native", icon: siReact },
+      { name: "React Native", icon: siReact, core: true },
       { name: "Android", icon: siAndroid },
       { name: "iOS", icon: siApple, color: LIGHT },
-      { name: "Ionic", icon: siIonic },
     ],
   },
   {
     label: "Backend & Data",
     skills: [
-      { name: "Node.js", icon: siNodedotjs },
-      { name: "Laravel", icon: siLaravel },
+      { name: "Node.js", icon: siNodedotjs, core: true },
+      { name: "Laravel", icon: siLaravel, core: true },
       { name: "PHP", icon: siPhp },
       { name: "REST APIs", lucide: Braces },
       { name: "WebSockets", image: "/assets/tech/websocket.svg" },
@@ -101,7 +100,6 @@ const SKILL_GROUPS: { label: string; skills: Skill[] }[] = [
       { name: "Firebase", icon: siFirebase },
       { name: "Stripe", icon: siStripe },
       { name: "WordPress", icon: siWordpress, color: "#7aa7d6" },
-      { name: "WooCommerce", icon: siWoocommerce },
     ],
   },
   {
@@ -131,7 +129,7 @@ const SKILL_GROUPS: { label: string; skills: Skill[] }[] = [
 
 const SkillChip = ({ skill }: { skill: Skill }) => (
   <TechHoverCard techName={skill.name} className="no-underline hover:no-underline">
-    <span className="inline-flex items-center gap-2 rounded-md border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm text-custom-foreground transition-colors hover:border-custom-accent/50 hover:bg-white/[0.06]">
+    <span className={`${CHIP_STYLES.base} ${skill.core ? CHIP_STYLES.core : CHIP_STYLES.regular}`}>
       {skill.icon ? (
         <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" fill={skill.color ?? `#${skill.icon.hex}`} aria-hidden>
           <path d={skill.icon.path} />

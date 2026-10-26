@@ -160,22 +160,6 @@ export const EXPERIENCES = [
     ],
   },
   {
-    company: "Equal & Co.",
-    url: "https://equalandco.com",
-    role: "Software Developer",
-    period: "January 2022 - Present",
-    hideFromResume: true,
-    resumeBullets: [
-      "Developed a React Industrial Liquid Management system, optimizing interface interactions across both admin and customer panels.",
-      "Integrated WebSockets to handle high-frequency data streams, driving accurate, timely updates to interactive graphs.",
-      "Designed the REST API contracts and SQL schema backing the reporting views.",
-    ],
-    description: [
-      "Working the development of a React-based Industrial Liquid Management system, optimizing interface interactions for both admin and customer panels.",
-      "Utilized WebSockets to efficiently handle high-frequency data streams, ensuring accurate and timely updates to interactive graphs.",
-    ],
-  },
-  {
     company: "Source Expert",
     url: "https://sourceexpert.net",
     role: "Senior Full Stack Developer",
@@ -185,6 +169,22 @@ export const EXPERIENCES = [
       "Building and shipping production web and mobile applications for international clients as part of a 15+ engineer team spanning the USA and Bangladesh.",
       "Developing full-stack solutions using React.js, React Native, Next.js, and Node.js from concept through deployment.",
       "Contributing to high-performance, scalable digital products across e-commerce, food delivery, and SaaS domains.",
+    ],
+  },
+  {
+    company: "Equal & Co.",
+    url: "https://equalandco.com",
+    role: "Software Developer",
+    period: "January 2022 - August 2026",
+    hideFromResume: true,
+    resumeBullets: [
+      "Developed a React Industrial Liquid Management system, optimizing interface interactions across both admin and customer panels.",
+      "Integrated WebSockets to handle high-frequency data streams, driving accurate, timely updates to interactive graphs.",
+      "Designed the REST API contracts and SQL schema backing the reporting views.",
+    ],
+    description: [
+      "Worked on the development of a React-based Industrial Liquid Management system, optimizing interface interactions for both admin and customer panels.",
+      "Utilized WebSockets to efficiently handle high-frequency data streams, ensuring accurate and timely updates to interactive graphs.",
     ],
   },
   {
